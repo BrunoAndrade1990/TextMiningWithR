@@ -1,0 +1,70 @@
+#
+#   Teste de quantidade de palavras positivas por Comentário 
+#
+listComment=csvFile$Comment
+positiveteste = score.sentiment.possitive(listComment, positives)
+
+
+score.sentiment.possitive = function(sentences, pos.words, .progress = 'none'){
+  scores = laply(sentences, function(sentence, pos.words){
+    sentence = gsub("[[:punct:]]", "", sentence)
+    sentence = gsub("[[:cntrl:]]", "", sentence)
+    sentence = gsub("\\d+", "", sentence)
+    sentence = tolower(sentence)
+    word.list = str_split(sentence, "\\s+")
+    words = unlist(word.list)
+    pos.matches = match(words, pos.words)
+    pos.matches = !is.na(pos.matches)
+    positiveScore = sum(pos.matches)
+    return(positiveScore)
+  }, pos.words, .progress = .progress )
+  #scores.df = data.frame(positiveteste$=scores, text=sentences)
+  return(scores)
+}
+
+
+
+hist(positiveteste,
+     main="Quantidade de comentários", 
+     xlab="Comentários", 
+     border="black", 
+     col="grey",
+     #xlim=c(-1,4),
+     #ylim =c(1,4),
+     las=1, 
+     breaks=7)
+
+
+
+
+cat("\014")
+corpus=tm::Corpus(VectorSource(csvFile$Comment))
+corpus=Corpus(VectorSource(corpus))
+corpus=tm_map(corpus,tolower)
+corpus=tm_map(corpus,function(x) removeWords(x,stopwords()))
+corpus=tm_map(corpus,PlainTextDocument)
+listComment=csvFile$Comment
+listComment = gsub("[[:punct:]]", "", listComment)
+listComment = gsub("[[:cntrl:]]", "", listComment)
+listComment = gsub("\\d+", "", listComment)
+listComment = tolower(listComment)
+word.list = str_split(listComment, "\\s+")
+words = unlist(word.list)
+pos.matches = match(words, positives)
+neg.matches = match(words, negatives)
+pos.matches = !is.na(pos.matches)
+neg.matches = !is.na(neg.matches)
+positiveScore = count(pos.matches)
+negativeScore = count(neg.matches)
+
+
+
+
+pie(positiveScore$freq,
+    main = "Quantidade de Palavras positivas",
+    labels = c("93,8%","6,2%"),
+    col = c(4,2) )
+legend("topright",fill=c(4,2),legend = c("Outras palavras","Palavras Positivas") )
+
+table = table(positiveScore$freq)
+barplot(table, col=topo.colors(9))
